@@ -4,6 +4,10 @@ Contains 2 folders:
 *rock_paper_scissors* : the smart contracts behind the game (done in Foundry, deployed on Goerli with hardhat)  
 *rock_paper_scissors_ui* : the attempt for an UI
 
+### Contracts on Goerli
+paymentToken: 0x5ab559c06339D8E068De83afAB372834e7d060Db  
+rockPaperScissors: 0x27146E4f55560eF3c829b52055fe1bf688f10D03
+
 ## The Game logic
 1. Game Setup: The contract is initialized with a payment token, wager amount, fee amount, minimum consecutive wins, and minimum jackpot amount. The payment token is an ERC20 token used for wagers. The wager amount is the amount a player must bet to play a game. The fee amount is a percentage of the wager that is taken as a fee. The minimum consecutive wins is the number of games a player must win in a row to win the jackpot. The minimum jackpot amount is the minimum amount that the jackpot can be.
 2. Committing a Move: A player commits a move by calling the `commitMove()` function with a hash of their move and a nonce. The player must have enough of the payment token to cover the wager and must have approved the contract to spend that amount. The move is stored in a Game struct, and the state of the game is updated. The wager amount is transferred from the player to the contract, and a fee is taken.
