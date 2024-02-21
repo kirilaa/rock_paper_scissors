@@ -1,0 +1,582 @@
+[
+    {
+        "type": "constructor",
+        "inputs": [
+            {
+                "name": "_paymentToken",
+                "type": "address",
+                "internalType": "address"
+            },
+            {
+                "name": "_wagerAmount",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_feeAmount",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "MIN_WAGER_AMOUNT",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "allPlayers",
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "collectedAmount",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "commitMove",
+        "inputs": [
+            {
+                "name": "_moveHash",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "consecutiveWins",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "feePercentage",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "gameCounter",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "games",
+        "inputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "state",
+                "type": "uint8",
+                "internalType": "enum RockPaperScissors.GameState"
+            },
+            {
+                "name": "player1",
+                "type": "tuple",
+                "internalType": "struct RockPaperScissors.Player",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "moveHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "move",
+                        "type": "uint8",
+                        "internalType": "enum RockPaperScissors.Move"
+                    }
+                ]
+            },
+            {
+                "name": "player2",
+                "type": "tuple",
+                "internalType": "struct RockPaperScissors.Player",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "moveHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "move",
+                        "type": "uint8",
+                        "internalType": "enum RockPaperScissors.Move"
+                    }
+                ]
+            },
+            {
+                "name": "result",
+                "type": "uint8",
+                "internalType": "enum RockPaperScissors.GameWinner"
+            },
+            {
+                "name": "wager",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getGameInfo",
+        "inputs": [
+            {
+                "name": "_gameId",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple",
+                "internalType": "struct RockPaperScissors.Game",
+                "components": [
+                    {
+                        "name": "state",
+                        "type": "uint8",
+                        "internalType": "enum RockPaperScissors.GameState"
+                    },
+                    {
+                        "name": "player1",
+                        "type": "tuple",
+                        "internalType": "struct RockPaperScissors.Player",
+                        "components": [
+                            {
+                                "name": "addr",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "moveHash",
+                                "type": "bytes32",
+                                "internalType": "bytes32"
+                            },
+                            {
+                                "name": "move",
+                                "type": "uint8",
+                                "internalType": "enum RockPaperScissors.Move"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "player2",
+                        "type": "tuple",
+                        "internalType": "struct RockPaperScissors.Player",
+                        "components": [
+                            {
+                                "name": "addr",
+                                "type": "address",
+                                "internalType": "address"
+                            },
+                            {
+                                "name": "moveHash",
+                                "type": "bytes32",
+                                "internalType": "bytes32"
+                            },
+                            {
+                                "name": "move",
+                                "type": "uint8",
+                                "internalType": "enum RockPaperScissors.Move"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "result",
+                        "type": "uint8",
+                        "internalType": "enum RockPaperScissors.GameWinner"
+                    },
+                    {
+                        "name": "wager",
+                        "type": "uint256",
+                        "internalType": "uint256"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getLeaderboard",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "leaderboard",
+                "type": "address[]",
+                "internalType": "address[]"
+            },
+            {
+                "name": "wins",
+                "type": "uint256[]",
+                "internalType": "uint256[]"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "getPlayerInfoForGame",
+        "inputs": [
+            {
+                "name": "_gameId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_playerIndex",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "tuple",
+                "internalType": "struct RockPaperScissors.Player",
+                "components": [
+                    {
+                        "name": "addr",
+                        "type": "address",
+                        "internalType": "address"
+                    },
+                    {
+                        "name": "moveHash",
+                        "type": "bytes32",
+                        "internalType": "bytes32"
+                    },
+                    {
+                        "name": "move",
+                        "type": "uint8",
+                        "internalType": "enum RockPaperScissors.Move"
+                    }
+                ]
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "hashMove",
+        "inputs": [
+            {
+                "name": "_move",
+                "type": "uint8",
+                "internalType": "enum RockPaperScissors.Move"
+            },
+            {
+                "name": "_nonce",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "bytes32",
+                "internalType": "bytes32"
+            }
+        ],
+        "stateMutability": "pure"
+    },
+    {
+        "type": "function",
+        "name": "minConsecutiveWins",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "minJackpotAmount",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "numberOfPlayers",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "paymentToken",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "contract IERC20"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "playerLastGame",
+        "inputs": [
+            {
+                "name": "",
+                "type": "address",
+                "internalType": "address"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "revealMoveForLastGame",
+        "inputs": [
+            {
+                "name": "_move",
+                "type": "uint8",
+                "internalType": "enum RockPaperScissors.Move"
+            },
+            {
+                "name": "_nonce",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
+    },
+    {
+        "type": "function",
+        "name": "wagerAmount",
+        "inputs": [],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "event",
+        "name": "GameResult",
+        "inputs": [
+            {
+                "name": "_gameId",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "_winner",
+                "type": "uint8",
+                "indexed": false,
+                "internalType": "enum RockPaperScissors.GameWinner"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "JackpotWon",
+        "inputs": [
+            {
+                "name": "winner",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            },
+            {
+                "name": "amount",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "event",
+        "name": "MoveCommitted",
+        "inputs": [
+            {
+                "name": "player",
+                "type": "address",
+                "indexed": false,
+                "internalType": "address"
+            },
+            {
+                "name": "gameId",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "wager",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            },
+            {
+                "name": "fee",
+                "type": "uint256",
+                "indexed": false,
+                "internalType": "uint256"
+            }
+        ],
+        "anonymous": false
+    },
+    {
+        "type": "error",
+        "name": "AddressEmptyCode",
+        "inputs": [
+            {
+                "name": "target",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "AddressInsufficientBalance",
+        "inputs": [
+            {
+                "name": "account",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "FailedInnerCall",
+        "inputs": []
+    },
+    {
+        "type": "error",
+        "name": "InvalidGameState",
+        "inputs": [
+            {
+                "name": "_state",
+                "type": "uint8",
+                "internalType": "enum RockPaperScissors.GameState"
+            }
+        ]
+    },
+    {
+        "type": "error",
+        "name": "SafeERC20FailedOperation",
+        "inputs": [
+            {
+                "name": "token",
+                "type": "address",
+                "internalType": "address"
+            }
+        ]
+    }
+]
