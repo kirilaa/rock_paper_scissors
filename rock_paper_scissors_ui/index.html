@@ -8,21 +8,52 @@
 <body>
     <h1>Rock Paper Scissors</h1>
     <div>
+        <h3>Balances</h3>
+        <p id="balance">Balance: </p>
+        <p id="winner">Winner: </p>
+    </div>
+    <div>
+        <h2>Mint and approve tokens</h2>
+        <button id="mint">Mint</button>
+        <button id="approve">Approve</button>
+    </div>
+    <div >
+        <h2>Type a nonce and pick a move</h2>
         <input type="text" id="move-nonce" placeholder="Enter a unique nonce">
         <button id="rock">Rock</button>
         <button id="paper">Paper</button>
         <button id="scissors">Scissors</button>
         
     </div>
-    <div id="status"></div>
     <div>
+        <h3>Status messages: </h3>
+        <div id="status"></div>
+    </div>
+    <div>
+        <h2>Reveal move</h2>
+        <div id="reveal-move">
+            <input type="radio" id="rock" name="move" value="Rock">
+            <label for="rock">Rock</label><br>
+            <input type="radio" id="paper" name="move" value="Paper">
+            <label for="paper">Paper</label><br>
+            <input type="radio" id="scissors" name="move" value="Scissors">
+            <label for="scissors">Scissors</label><br>
+        </div>
         <input type="text" id="nonce" placeholder="Enter your nonce">
         <button id="reveal">Reveal Move</button>
     </div>
-    <div>
-        <button id="mint">Mint</button>
-        <button id="approve">Approve</button>
-    </div>
+
+    <table id="leaderboard">
+        <thead>
+            <tr>
+                <th>Address</th>
+                <th>Wins</th>
+            </tr>
+        </thead>
+        <tbody>
+            <!-- Rows will be added here dynamically -->
+        </tbody>
+    </table>
     <!-- Use UMD build of ethers.js -->
     <script src="https://cdn.ethers.io/lib/ethers-5.2.umd.min.js"></script>
     <!-- Load app.js as a module -->

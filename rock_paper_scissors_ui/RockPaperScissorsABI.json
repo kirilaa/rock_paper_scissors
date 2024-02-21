@@ -16,6 +16,16 @@
                 "name": "_feeAmount",
                 "type": "uint256",
                 "internalType": "uint256"
+            },
+            {
+                "name": "_minConsecutiveWins",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_minJackpotAmount",
+                "type": "uint256",
+                "internalType": "uint256"
             }
         ],
         "stateMutability": "nonpayable"
@@ -337,6 +347,25 @@
     },
     {
         "type": "function",
+        "name": "getWinner",
+        "inputs": [
+            {
+                "name": "_gameId",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "outputs": [
+            {
+                "name": "",
+                "type": "uint256",
+                "internalType": "uint256"
+            }
+        ],
+        "stateMutability": "view"
+    },
+    {
+        "type": "function",
         "name": "hashMove",
         "inputs": [
             {
@@ -429,6 +458,29 @@
             }
         ],
         "stateMutability": "view"
+    },
+    {
+        "type": "function",
+        "name": "revealMoveForGame",
+        "inputs": [
+            {
+                "name": "_gameId",
+                "type": "uint256",
+                "internalType": "uint256"
+            },
+            {
+                "name": "_move",
+                "type": "uint8",
+                "internalType": "enum RockPaperScissors.Move"
+            },
+            {
+                "name": "_nonce",
+                "type": "string",
+                "internalType": "string"
+            }
+        ],
+        "outputs": [],
+        "stateMutability": "nonpayable"
     },
     {
         "type": "function",
@@ -567,6 +619,11 @@
                 "internalType": "enum RockPaperScissors.GameState"
             }
         ]
+    },
+    {
+        "type": "error",
+        "name": "ReentrancyGuardReentrantCall",
+        "inputs": []
     },
     {
         "type": "error",

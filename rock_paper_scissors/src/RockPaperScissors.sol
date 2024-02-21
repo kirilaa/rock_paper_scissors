@@ -1,10 +1,11 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.20;
 
+import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
-contract RockPaperScissors {
+contract RockPaperScissors is ReentrancyGuard {
     using SafeERC20 for IERC20;
     enum Move { None, Rock, Paper, Scissors }
     enum GameState { Open, Player1Commited, Player2Commited, OnePlayerRevealed, WinnerAnnounced }
@@ -23,11 +24,17 @@ contract RockPaperScissors {
         GameWinner result;
         uint wager;
     }
-
+    // errors
     error InvalidGameState(GameState _state);
 
-    uint public constant MIN_WAGER_AMOUNT = 1;
+     // Events
+    event MoveCommitted(address player, uint gameId, uint wager, uint fee);
+    event JackpotWon(address winner, uint amount);
+    event GameResult(uint _gameId, GameWinner _winner);
 
+    // Constants
+    uint public constant MIN_WAGER_AMOUNT = 1;
+    
     // Payment token for wagers
     IERC20 public paymentToken;
     
@@ -52,13 +59,7 @@ contract RockPaperScissors {
     mapping(address => uint) public consecutiveWins;
 
 
-
-    // Events
-    event MoveCommitted(address player, uint gameId, uint wager, uint fee);
-    event JackpotWon(address winner, uint amount);
-    event GameResult(uint _gameId, GameWinner _winner);
-
-    constructor(address _paymentToken, uint _wagerAmount, uint _feeAmount, uint _minConsecutiveWins) {
+    constructor(address _paymentToken, uint _wagerAmount, uint _feeAmount, uint _minConsecutiveWins, uint _minJackpotAmount) {
         paymentToken = IERC20(_paymentToken);
         if(_wagerAmount == 0 ) _wagerAmount = MIN_WAGER_AMOUNT; 
         wagerAmount = _wagerAmount;
@@ -67,15 +68,17 @@ contract RockPaperScissors {
         } else {
             feePercentage = _feeAmount;
         }
-        minJackpotAmount = 100*wagerAmount;
         minConsecutiveWins = _minConsecutiveWins;
+        minJackpotAmount = _minJackpotAmount;
     }
 
-    function getGameInfo(uint _gameId) public view returns(Game memory) {
+    // ================================= VIEW FUNCTIONS =================================================
+
+    function getGameInfo(uint _gameId) external view returns(Game memory) {
         return games[_gameId];
     }
 
-    function getPlayerInfoForGame(uint _gameId, uint _playerIndex) public view returns(Player memory) {
+    function getPlayerInfoForGame(uint _gameId, uint _playerIndex) external view returns(Player memory) {
         if(_playerIndex == 0) {
             return games[_gameId].player1;
         } else {
@@ -83,7 +86,11 @@ contract RockPaperScissors {
         }
     }
 
-    function getLeaderboard() public view returns (address[] memory leaderboard, uint[] memory wins) {
+    function getWinner(uint _gameId) external view returns(uint) {
+        return uint(games[_gameId].result);
+    }
+
+    function getLeaderboard() external view returns (address[] memory leaderboard, uint[] memory wins) {
         leaderboard = new address[](numberOfPlayers);
         wins = new uint[](numberOfPlayers);
         address player;
@@ -105,8 +112,13 @@ contract RockPaperScissors {
         return (leaderboard, wins);
     }
 
+    function hashMove(Move _move, string memory _nonce) external pure returns (bytes32) {
+        return keccak256(abi.encodePacked(_move, _nonce));
+    }
 
-    function commitMove(bytes32 _moveHash) public {
+    // ================================= EXTERNAL FUNCTIONS =================================================
+
+    function commitMove(bytes32 _moveHash) external nonReentrant {
         require(paymentToken.balanceOf(msg.sender) >= wagerAmount, "Insufficient funds to play");
         require(paymentToken.allowance(msg.sender, address(this)) >= wagerAmount, "Insufficient allowance");
         require(_moveHash != 0, "Invalid move hash");
@@ -120,26 +132,39 @@ contract RockPaperScissors {
         emit MoveCommitted(msg.sender, gameId, netWager, wagerAmount - netWager);
     }
 
-    
-    
-    function _commitMove(bytes32 _moveHash) internal returns (uint){
-        
-        uint lastGameId;
+    function revealMoveForGame(uint _gameId, Move _move, string memory _nonce) external nonReentrant {
+        _revealMove(_gameId, _move, _nonce);
+    }
+
+    function revealMoveForLastGame(Move _move, string memory _nonce) external nonReentrant {
+        _revealMove(playerLastGame[msg.sender], _move, _nonce);
+    }
+
+    // ================================= INTERNAL FUNCTIONS =================================================
+
+    function _getAvailableGame() internal returns(uint lastGameId) {
         if(gameCounter > 0 && games[gameCounter].state < GameState.Player2Commited) {
             lastGameId = gameCounter;
         } else {
             lastGameId = ++gameCounter;
         }
+    }
+    
+    
+    function _commitMove(bytes32 _moveHash) internal returns (uint){
         
+        uint lastGameId = _getAvailableGame();
+        require(playerLastGame[msg.sender] != lastGameId, "Already played" );
+              
+
         address player1 = games[lastGameId].player1.addr;
         address player2 = games[lastGameId].player2.addr;
-        require(playerLastGame[msg.sender] != lastGameId, "Already played" );
         require(player1 != msg.sender || player2 != msg.sender, "Player already played" );
 
+        // Add new player if has not played yet 
         if(playerLastGame[msg.sender] == 0) {
             allPlayers[numberOfPlayers++] = msg.sender;
         }
-        
         playerLastGame[msg.sender] = lastGameId;
 
         if(player1 != address(0) && player2 == address(0)) {
@@ -163,39 +188,34 @@ contract RockPaperScissors {
 
     }
 
-    function hashMove(Move _move, string memory _nonce) external pure returns (bytes32) {
-        return keccak256(abi.encodePacked(_move, _nonce));
-    }
-
-    function revealMoveForLastGame(Move _move, string memory _nonce) external  {
-        require(playerLastGame[msg.sender] != 0, "No game to reveal");
-        GameState gameState = games[playerLastGame[msg.sender]].state;
-        address player1 = games[playerLastGame[msg.sender]].player1.addr;
-        address player2 = games[playerLastGame[msg.sender]].player2.addr;
+    function _revealMove(uint _gameId, Move _move, string memory _nonce) internal {
+        GameState gameState = games[_gameId].state;
+        address player1 = games[_gameId].player1.addr;
+        address player2 = games[_gameId].player2.addr;
         require(player1 == msg.sender || player2 == msg.sender, "Not in reveal phase");
         require(_move != Move.None, "Invalid move");
-        uint gameId = playerLastGame[msg.sender];
+        require(gameState >= GameState.Player2Commited, "Invalid state");
         bytes32 moveHash = keccak256(abi.encodePacked(_move, _nonce));
 
-        if (msg.sender == games[gameId].player1.addr) {
-            require(moveHash == games[gameId].player1.moveHash, "Hash mismatch");
-            games[gameId].player1.move = _move;
+        if (msg.sender == player1) {
+            require(moveHash == games[_gameId].player1.moveHash, "Hash mismatch");
+            games[_gameId].player1.move = _move;
         } else {
-            require(moveHash == games[gameId].player2.moveHash, "Hash mismatch");
-            games[gameId].player2.move = _move;
+            require(moveHash == games[_gameId].player2.moveHash, "Hash mismatch");
+            games[_gameId].player2.move = _move;
         }
         if(gameState == GameState.Player2Commited) {
-            games[gameId].state = GameState.OnePlayerRevealed;
+            games[_gameId].state = GameState.OnePlayerRevealed;
         }
         else {
-            games[gameId].state = GameState.WinnerAnnounced;
-            GameWinner result = _determineWinner(games[gameId].player1.move, games[gameId].player2.move);
-            games[gameId].result = result;
-            _updateWinings(games[gameId].player1.addr, games[gameId].player2.addr, result, games[gameId].wager);
-            emit GameResult(gameId, result);
+            games[_gameId].state = GameState.WinnerAnnounced;
+            GameWinner result = _determineWinner(games[_gameId].player1.move, games[_gameId].player2.move);
+            games[_gameId].result = result;
+            _updateWinings(player1, player2, result, games[_gameId].wager);
+            emit GameResult(_gameId, result);
         }
-
     }
+
     
     // Add this function to your RockPaperScissors contract
     function _determineWinner(Move player1Move, Move player2Move) internal pure returns (GameWinner result) {
@@ -211,23 +231,27 @@ contract RockPaperScissors {
         }
     }
 
+    // Update leaderboard counter for leaderboard and send funds
     function _updateWinings(address player1, address player2, GameWinner result, uint _wagerAmount) internal {
         if (result == GameWinner.Player1) { 
             ++consecutiveWins[player1];
             consecutiveWins[player2] = 0;
             paymentToken.safeTransfer(player1, 2*_wagerAmount);
+            _checkAndAwardJackpot(player1);
         } else if(result == GameWinner.Player2) {
             consecutiveWins[player1] = 0;
             ++consecutiveWins[player2];
             paymentToken.safeTransfer(player2, 2*_wagerAmount);
+            _checkAndAwardJackpot(player1);
         } else {
             paymentToken.safeTransfer(player1, _wagerAmount);
             paymentToken.safeTransfer(player2, _wagerAmount);
         }
     }
 
+    // Award a jackpot
     function _checkAndAwardJackpot(address _player) internal {
-        if (consecutiveWins[_player] >= minConsecutiveWins && collectedAmount >= minJackpotAmount) { // Assuming 3 wins for a jackpot
+        if (consecutiveWins[_player] >= minConsecutiveWins && collectedAmount >= minJackpotAmount) {
             paymentToken.safeTransfer(_player, minJackpotAmount);
             emit JackpotWon(_player, minJackpotAmount);
             collectedAmount -= minJackpotAmount; 
