@@ -116,7 +116,7 @@ async function main() {
                 await tx.wait();
                 updateStatus('Approved RockPaperScissors contract to use 1000 tokens successfully.');
             } catch (error) {
-                updateStatus(`Error during approval: ${error.message}`);
+                updateStatus(`Error  during approval: ${error.message}`);
             }
         });
 
